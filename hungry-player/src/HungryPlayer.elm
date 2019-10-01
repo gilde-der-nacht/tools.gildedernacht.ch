@@ -4,7 +4,7 @@ import Browser exposing (sandbox)
 import Debug
 import Html exposing (..)
 import Html.Attributes exposing (for, id, type_, value)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 
 
 
@@ -15,6 +15,7 @@ type alias Model =
     { id : Int
     , name : String
     , entries : List Entry
+    , initialInput : Entry
     }
 
 
@@ -31,6 +32,7 @@ initialModel =
     { id = 1
     , name = "OpenOrder"
     , entries = initialEntry
+    , initialInput = Entry 0 "" "" []
     }
 
 
@@ -42,12 +44,18 @@ initialEntry =
     ]
 
 
+initialInput : String -> String -> List String -> Entry
+initialInput name order paymentOptions =
+    Entry 0 name order paymentOptions
+
+
 
 -- UPDATE
 
 
 type Msg
     = Order
+    | InputName String
 
 
 update : Msg -> Model -> Model
@@ -55,6 +63,9 @@ update msg model =
     case msg of
         Order ->
             { model | entries = model.entries ++ [ Entry 4 "Fourth" "Wasser und Brot" [ "Twint" ] ] }
+
+        InputName string ->
+            { model | initialInput = Entry 0 string "" [] }
 
 
 
@@ -108,7 +119,7 @@ viewEntryList entries =
 viewInputForm : Html Msg
 viewInputForm =
     form []
-        [ label [ for "name" ] [ text "Name" ]
+        [ label [ for "name", onInput InputName ] [ text "Name" ]
         , input [ id "name" ] []
         , label [ for "order" ] [ text "Bestellung" ]
         , input [ id "order" ] []
